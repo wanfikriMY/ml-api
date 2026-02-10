@@ -113,10 +113,10 @@ def validate_loan_input(loan: LoanApplication):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global model, loan_model, loan_encoders
-    iris_model = load(MODEL_PATH)
-    iris_encoder = load(ENCODER_PATH)
-    app.state.class_names = iris_encoder.classes_.tolist()
+    global loan_model, loan_encoders
+    app.state.iris_model = load(MODEL_PATH)
+    app.state.iris_encoder = load(ENCODER_PATH)
+    app.state.class_names = app.state.iris_encoder.classes_.tolist()
     loan_model = load(LOAN_MODEL_PATH)
     loan_encoders = load(LOAN_ENCODERS_PATH)
     yield
@@ -139,6 +139,7 @@ async def health_check():
 async def get_prediction(iris: Iris):
     data = iris.data
     class_names = app.state.class_names
+    iris_model = app.state.iris_model
     prediction = iris_model.predict(data).tolist()
     proba = iris_model.predict_proba(data).tolist()
     prediction_name = [class_names[int(p)] for p in prediction]
