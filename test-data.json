@@ -1,0 +1,22 @@
+// Iris flower classification test data
+{
+  "prediction": [0],
+  "prediction_name": ["setosa"],
+  "proba": [[0.99, 0.01, 0.0]]
+}
+
+// Loan approval prediction test data
+{
+  "gender": "Male",
+  "married": "Yes",
+  "dependents": "0",
+  "education": "Graduate",
+  "self_employed": "No",
+  "applicant_income": 5000,
+  "coapplicant_income": 2000,
+  "loan_amount": 150000,
+  "loan_amount_term": 360,
+  "credit_history": 1.0,
+  "property_area": "Urban"
+}
+

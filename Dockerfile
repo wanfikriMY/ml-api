@@ -14,7 +14,7 @@ RUN groupadd --gid 1000 appgroup && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
-COPY --chown=appuser:appgroup prediction_model/ /app/models/
+COPY --chown=appuser:appgroup prediction_model/ /app/prediction_model/
 
 COPY --chown=appuser:appgroup app/ /app/app/
 

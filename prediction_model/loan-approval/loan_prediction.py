@@ -26,7 +26,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-DATASET_PATH = "/Users/wanfikri/Repo/private/ml-api/models/loan-approval/datasets/LoanApprovalPrediction.csv"
+DATASET_PATH = "/Users/wanfikri/Repo/private/ml-api/prediction_model/loan-approval/datasets/LoanApprovalPrediction.csv"
 OUTPUT_DIR = "/Users/wanfikri/Repo/private/ml-api/models/loan-approval/results"
 MODEL_PATH = os.path.join(OUTPUT_DIR, "random_forest_model.joblib")
 PREDICTIONS_PATH = os.path.join(OUTPUT_DIR, "predictions.csv")
@@ -50,25 +50,13 @@ TARGET_COLUMN = "Loan_Status"
 
 
 def load_dataset(path):
-    """Load the loan approval dataset."""
-    print("=" * 60)
-    print("LOAN APPROVAL PREDICTION - RandomForestClassifier")
-    print("=" * 60)
-    print(f"\n[1] Loading dataset from: {path}")
+
     df = pd.read_csv(path)
-    print(f"    Dataset shape: {df.shape[0]} rows, {df.shape[1]} columns")
-    print(f"    Columns: {list(df.columns)}")
     return df
 
 
 def explore_data(df):
-    """Display basic data exploration statistics."""
-    print("\n[2] Data Exploration")
-    print("-" * 40)
-    print(f"    Target distribution:")
-    print(f"    - Approved (Y): {(df[TARGET_COLUMN] == 'Y').sum()}")
-    print(f"    - Rejected (N): {(df[TARGET_COLUMN] == 'N').sum()}")
-    print(f"\n    Missing values per column:")
+  
     for col in df.columns:
         missing = df[col].isnull().sum()
         if missing > 0:
@@ -76,9 +64,7 @@ def explore_data(df):
 
 
 def preprocess_data(df):
-    """Preprocess the dataset: handle missing values and encode categorical variables."""
-    print("\n[3] Preprocessing Data")
-    print("-" * 40)
+  
 
     df_processed = df.copy()
 
@@ -204,9 +190,6 @@ def display_feature_importance(model, X):
 
 
 def save_results(model, feature_importance, X_test, y_test, y_pred, label_encoders):
-    """Save model and predictions to files."""
-    print("\n[7] Saving Results")
-    print("-" * 40)
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -226,26 +209,18 @@ def save_results(model, feature_importance, X_test, y_test, y_pred, label_encode
     feature_importance.to_csv(
         os.path.join(OUTPUT_DIR, "feature_importance.csv"), index=False
     )
-    print(
-        f"    Feature importance saved to: {os.path.join(OUTPUT_DIR, 'feature_importance.csv')}"
-    )
 
     joblib.dump(label_encoders, os.path.join(OUTPUT_DIR, "label_encoders.joblib"))
 
 
 def main():
-    """Main execution function."""
     df = load_dataset(DATASET_PATH)
-    explore_data(df)
     df_processed, label_encoders = preprocess_data(df)
     model, X_train, X_test, y_train, y_test = train_model(df_processed)
     y_pred, cm = evaluate_model(model, X_test, y_test)
     feature_importance = display_feature_importance(model, X_train)
     save_results(model, feature_importance, X_test, y_test, y_pred, label_encoders)
 
-    print("\n" + "=" * 60)
-    print("TRAINING COMPLETE!")
-    print("=" * 60)
 
 
 if __name__ == "__main__":

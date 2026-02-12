@@ -18,26 +18,30 @@ import pandas as pd
 
 
 LOAN_MODEL_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "models",
+    os.path.dirname(os.path.dirname(__file__)),
+    "prediction_model",
     "loan-approval",
     "results",
     "random_forest_model.joblib",
 )
 LOAN_ENCODERS_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "models",
+    os.path.dirname(os.path.dirname(__file__)),
+    "prediction_model",
     "loan-approval",
     "results",
     "label_encoders.joblib",
 )
 MODEL_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "models", "iris-model", "dt_model.pkl"
+    os.path.dirname(os.path.dirname(__file__)),
+    "prediction_model",
+    "iris-model",
+    "dt_model.pkl",
 )
 ENCODER_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "models", "iris-model", "label_encoder.pkl"
+    os.path.dirname(os.path.dirname(__file__)),
+    "prediction_model",
+    "iris-model",
+    "label_encoder.pkl",
 )
 
 
@@ -114,9 +118,10 @@ def validate_loan_input(loan: LoanApplication):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global loan_model, loan_encoders
-    app.state.iris_model = load(MODEL_PATH)
-    app.state.iris_encoder = load(ENCODER_PATH)
-    app.state.class_names = app.state.iris_encoder.classes_.tolist()
+    iris_model = load(MODEL_PATH)
+    iris_encoder = load(ENCODER_PATH)
+    app.state.iris_model = iris_model
+    app.state.class_names = iris_encoder.classes_.tolist()
     loan_model = load(LOAN_MODEL_PATH)
     loan_encoders = load(LOAN_ENCODERS_PATH)
     yield
@@ -152,6 +157,7 @@ async def get_prediction(iris: Iris):
 
 @app.post("/loan/predict", response_model=LoanPredictionResponse, tags=["predictions"])
 async def predict_loan(loan: LoanApplication):
+    global loan_model, loan_encoders
     validation_errors = validate_loan_input(loan)
     if validation_errors:
         raise HTTPException(
@@ -189,6 +195,7 @@ async def predict_loan(loan: LoanApplication):
     "/loan/predict/batch", response_model=LoanPredictionResponse, tags=["predictions"]
 )
 async def predict_loan_batch(batch: LoanBatch):
+    global loan_model, loan_encoders
     all_predictions = []
     all_probas = []
     all_prediction_names = []
